@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Bíblico - JESÚS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        h1 {
+            color: #444;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 60%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        th {
+            background-color: #ffcc80;
+            color: #333;
+            font-size: 24px;
+            padding: 15px;
+        }
+        td {
+            width: 20%;
+            height: 100px;
+            text-align: center;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            font-weight: bold;
+            position: relative;
+        }
+        .cell {
+            font-size: 24px;
+            display: block;
+            color: #444;
+        }
+        .name {
+            font-size: 12px;
+            display: block;
+            color: #666;
+            position: absolute;
+            bottom: 5px;
+            width: 100%;
+        }
+        .selected-names-container {
+            margin-top: 20px;
+        }
+        .selected-names-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 60%;
+        }
+        .selected-names-table td {
+            width: 20%;
+            height: 60px;
+            text-align: center;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            font-weight: bold;
+            position: relative;
+            background-color: #e8f5e9;
+        }
+        .free {
+            background-color: #f4a261;
+            color: #fff;
+            font-size: 18px;
+        }
+        .color1 { background-color: #ffebcc; }
+        .color2 { background-color: #e0f7fa; }
+        .color3 { background-color: #e8f5e9; }
+        .color4 { background-color: #f3e5f5; }
+        .color5 { background-color: #fff9c4; }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #savedTables {
+            margin-top: 30px;
+            text-align: center;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .table-container {
+            border: 2px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .reset-btn {
+            background-color: #e74c3c;
+        }
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bingo Bíblico - JESÚS</h1>
+
+    <button onclick="generateUniqueName()">Generar Nombre</button>
+    
+    <div class="selected-names-container">
+        <h2>Nombres Generados</h2>
+        <table id="selectedNamesTable" class="selected-names-table">
+            <tr>
+                <td colspan="5">No hay nombres generados aún</td>
+            </tr>
+        </table>
+    </div>
+
+    <table id="bingoTable">
+        <tr>
+            <th>J</th>
+            <th>E</th>
+            <th>S</th>
+            <th>Ú</th>
+            <th>S</th>
+        </tr>
+    </table>
+
+    <button onclick="generateBingo()">Generar Nueva Tabla</button>
+    <button onclick="saveBingo()">Guardar Tabla</button>
+    <button onclick="getSavedTables()">Ver Tablas Guardadas</button>
+    <button onclick="clearSavedTables()" class="reset-btn">Limpiar Tablas y Reiniciar</button>
+
+    <div id="savedTables"></div>
+
+    <script>
+        const characters = [
+            { initials: "JCN", name: "Jesús de Nazaret" },
+            { initials: "PDR", name: "Pedro" },
+            { initials: "MJD", name: "María Madre de Jesús" },
+            { initials: "JIS", name: "Judas Iscariote" },
+            { initials: "FEL", name: "Felipe" },
+            { initials: "CRI", name: "Cristo" },
+            { initials: "LAZ", name: "Lázaro" },
+            { initials: "ZAQ", name: "Zaqueo" },
+            { initials: "SIM", name: "Simón" },
+            { initials: "MES", name: "Mesías" },
+            { initials: "BAR", name: "Bartolomé" },
+            { initials: "JBT", name: "Juan el Bautista" },
+            { initials: "MAM", name: "María Magdalena" },
+            { initials: "NIC", name: "Nicodemo" },
+            { initials: "ZAC", name: "Zacarías" },
+            { initials: "BER", name: "Bernabé" },
+            { initials: "TIM", name: "Timoteo" },
+            { initials: "JUT", name: "Judas Tadeo" },
+            { initials: "SAG", name: "Santiago" },
+            { initials: "JUH", name: "Juan" },
+            { initials: "AND", name: "Andrés" },
+            { initials: "MAT", name: "Mateo" },
+            { initials: "TOM", name: "Tomás" },
+            { initials: "MAR", name: "Marta" },
+            { initials: "MAD", name: "María hermana de Marta" },
+            { initials: "ELI", name: "Elisabet" },
+            { initials: "JAR", name: "José de Arimatea" },
+            { initials: "CLA", name: "Claudio" },
+            { initials: "LEV", name: "Leví" },
+            { initials: "NAT", name: "Natanael" },
+            { initials: "SAL", name: "Salomé" },
+            { initials: "LUC", name: "Lucas" },
+            { initials: "HDD", name: "Hijo de David" }
+        ];
+
+        let availableNames = [...characters];
+        let selectedNames = [];
+
+        function generateUniqueName() {
+            if (availableNames.length === 0) {
+                availableNames = [...characters]; // Reinicia la lista si todos los nombres fueron usados
+                selectedNames = [];
+                alert("Se han generado todos los nombres. Reiniciando...");
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableNames.length);
+            const selectedCharacter = availableNames.splice(randomIndex, 1)[0]; // Extrae el nombre seleccionado
+            selectedNames.push(selectedCharacter);
+
+            updateSelectedNamesTable();
+        }
+
+        function updateSelectedNamesTable() {
+            const table = document.getElementById("selectedNamesTable");
+            table.innerHTML = "";
+
+            let row;
+            selectedNames.forEach((char, index) => {
+                if (index % 5 === 0) {
+                    row = document.createElement("tr");
+                    table.appendChild(row);
+                }
+
+                let cell = document.createElement("td");
+                cell.innerHTML = `<span class="cell">${char.initials}</span><span class="name">${char.name}</span>`;
+                row.appendChild(cell);
+            });
+
+            // Si no hay nombres generados, muestra un mensaje
+            if (selectedNames.length === 0) {
+                table.innerHTML = `<tr><td colspan="5">No hay nombres generados aún</td></tr>`;
+            }
+        }
+
+        function clearSavedTables() {
+            if (confirm("¿Seguro que quieres borrar todas las tablas guardadas y reiniciar el juego?")) {
+                fetch("http://localhost:3000/clear-bingo", {
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    selectedNames = [];
+                    availableNames = [...characters];
+                    updateSelectedNamesTable();
+                })
+                .catch(error => console.error("Error:", error));
+            }
+        }
+
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function getRandomColorClass() {
+            const colors = ["color1", "color2", "color3", "color4", "color5"];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function findCharacterByInitials(initials) {
+            return characters.find(char => char.initials === initials);
+        }
+
+        function generateBingo() {
+            let table = document.getElementById("bingoTable");
+            table.innerHTML = `
+                <tr>
+                    <th>J</th>
+                    <th>E</th>
+                    <th>S</th>
+                    <th>Ú</th>
+                    <th>S</th>
+                </tr>
+            `;
+
+            let shuffledCharacters = shuffleArray([...characters]).slice(0, 24);
+            let cellIndex = 0;
+            let tableData = [];
+
+            for (let i = 0; i < 5; i++) {
+                let row = document.createElement("tr");
+                let rowData = [];
+                for (let j = 0; j < 5; j++) {
+                    let cell = document.createElement("td");
+                    let colorClass = getRandomColorClass();
+
+                    if (i === 2 && j === 2) {
+                        cell.className = "free";
+                        cell.innerHTML = `<span class="cell">G-LUZ</span><span class="name">#SomosLuz</span>`;
+                        rowData.push("X");
+                    } else {
+                        let char = shuffledCharacters[cellIndex++];
+                        cell.className = colorClass;
+                        cell.innerHTML = `<span class="cell">${char.initials}</span><span class="name">${char.name}</span>`;
+                        rowData.push(char.initials);
+                    }
+                    row.appendChild(cell);
+                }
+                tableData.push(rowData);
+                table.appendChild(row);
+            }
+
+            return tableData;
+        }
+
+        function saveBingo() {
+            const tableData = generateBingo();
+            fetch("http://localhost:3000/save-bingo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tableData })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function getSavedTables() {
+            fetch("http://localhost:3000/get-bingo")
+                .then(response => response.json())
+                .then(tables => {
+                    const savedTablesDiv = document.getElementById("savedTables");
+                    savedTablesDiv.innerHTML = "<h2>Tablas Guardadas</h2>";
+
+                    tables.forEach(table => {
+                        let tableDiv = document.createElement("div");
+                        tableDiv.classList.add("table-container");
+
+                        let tableHTML = `<strong>ID:</strong> ${table.id} | <strong>Fecha:</strong> ${table.created_at} <br>
+                        <table class="bingoTable">
+                            <tr>
+                                <th>J</th>
+                                <th>E</th>
+                                <th>S</th>
+                                <th>Ú</th>
+                                <th>S</th>
+                            </tr>`;
+
+                        JSON.parse(table.table_data).forEach(row => {
+                            tableHTML += `<tr>`;
+                            row.forEach(cell => {
+                                let char = findCharacterByInitials(cell);
+                                let colorClass = getRandomColorClass();
+                                if (char) {
+                                    tableHTML += `<td class="${colorClass}"><span class="cell">${char.initials}</span><span class="name">${char.name}</span></td>`;
+                                } else {
+                                    tableHTML += `<td class="free"><span class="cell">G-LUZ</span><span class="name">#SomosLuz</span></td>`;
+                                }
+                            });
+                            tableHTML += `</tr>`;
+                        });
+
+                        tableHTML += `</table>`;
+                        tableDiv.innerHTML = tableHTML;
+                        savedTablesDiv.appendChild(tableDiv);
+                    });
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        generateBingo();
+
+    </script>
+
+</body>
+</html>
